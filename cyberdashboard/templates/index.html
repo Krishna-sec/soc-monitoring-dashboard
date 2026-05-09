@@ -1,0 +1,469 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>CyberWatch — Dashboard</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+
+<div class="layout">
+
+    <!-- ── SIDEBAR ── -->
+    <aside class="sidebar">
+        <div class="sidebar-brand">
+            <div class="brand-icon">⚡</div>
+            <span class="brand-name">CyberWatch</span>
+        </div>
+
+        <nav class="sidebar-nav">
+            <span class="nav-section-label">Analysis</span>
+
+            <a href="#section-logs" class="nav-item active">
+                <svg class="nav-icon" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5">
+                    <path d="M4 6h12M4 10h12M4 14h8" stroke-linecap="round"/>
+                </svg>
+                Log Analysis
+            </a>
+
+            <a href="#section-scan" class="nav-item">
+                <svg class="nav-icon" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5">
+                    <circle cx="10" cy="10" r="7"/>
+                    <path d="M10 3v2M10 15v2M3 10h2M15 10h2" stroke-linecap="round"/>
+                </svg>
+                Network Scan
+            </a>
+
+            <a href="#section-packets" class="nav-item">
+                <svg class="nav-icon" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5">
+                    <rect x="3" y="5" width="14" height="10" rx="2"/>
+                    <path d="M7 9h6M7 12h4" stroke-linecap="round"/>
+                </svg>
+                Packets
+            </a>
+
+            <a href="#section-scrape" class="nav-item">
+                <svg class="nav-icon" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5">
+                    <circle cx="10" cy="10" r="7"/>
+                    <path d="M10 3c0 0-3 3-3 7s3 7 3 7M10 3c0 0 3 3 3 7s-3 7-3 7M3 10h14" stroke-linecap="round"/>
+                </svg>
+                Web Scraper
+            </a>
+
+            <span class="nav-section-label">Reports</span>
+
+            <a href="/download" class="nav-item">
+                <svg class="nav-icon" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5">
+                    <path d="M10 3v10M6 9l4 4 4-4M4 15h12" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+                Export JSON
+            </a>
+
+            <a href="/download-csv" class="nav-item">
+                <svg class="nav-icon" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5">
+                    <rect x="3" y="3" width="14" height="14" rx="2"/>
+                    <path d="M7 7h6M7 10h6M7 13h4" stroke-linecap="round"/>
+                </svg>
+                Export CSV
+            </a>
+        </nav>
+
+        <div class="sidebar-footer">
+            <a href="/reset" class="nav-item">
+                <svg class="nav-icon" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5">
+                    <path d="M4 10a6 6 0 1 0 1.5-4" stroke-linecap="round"/>
+                    <path d="M4 6v4h4" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+                Reset State
+            </a>
+            <button class="nav-item" onclick="toggleTheme()" style="background:none;border:none;width:100%;text-align:left;font:inherit;cursor:pointer;">
+                <svg class="nav-icon" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5">
+                    <path d="M10 3v1M10 16v1M3 10H2M18 10h-1M5.05 5.05l-.7-.7M15.65 14.65l-.7-.7M4.35 14.65l.7-.7M14.95 5.05l.7-.7"/>
+                    <circle cx="10" cy="10" r="3"/>
+                </svg>
+                Toggle Theme
+            </button>
+            <button class="nav-item btn-danger" onclick="logout()" style="background:none;border:none;width:100%;text-align:left;font:inherit;cursor:pointer;color:var(--danger);margin-top:4px;">
+                <svg class="nav-icon" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5">
+                    <path d="M13 10H4m9 0-3-3m3 3-3 3" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M8 6V5a2 2 0 0 1 2-2h5a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2h-5a2 2 0 0 1-2-2v-1" stroke-linecap="round"/>
+                </svg>
+                Sign Out
+            </button>
+        </div>
+    </aside>
+
+    <!-- ── HEADER ── -->
+    <header class="header">
+        <span class="header-title">
+            <span>/</span>dashboard
+        </span>
+        <div class="header-actions">
+            <div id="live-clock" style="font-family:var(--mono);font-size:12px;color:var(--text-muted);"></div>
+            <div id="alertBox" class="alert-box hidden" style="display:none;margin:0;">
+                ⚠ Threats detected — review below
+            </div>
+        </div>
+    </header>
+
+    <!-- ── MAIN ── -->
+    <main class="main">
+
+        <!-- Stats -->
+        <div class="stats-grid">
+            <div class="stat-card danger">
+                <div class="stat-label">Brute Force Attempts</div>
+                <div class="stat-value">{{ results.brute_force|length if results else 0 }}</div>
+                <div class="stat-sub">From log analysis</div>
+            </div>
+            <div class="stat-card warning">
+                <div class="stat-label">Suspicious IPs</div>
+                <div class="stat-value">{{ results.suspicious_ips|length if results else 0 }}</div>
+                <div class="stat-sub">High request volume</div>
+            </div>
+            <div class="stat-card accent">
+                <div class="stat-label">Live Packets</div>
+                <div class="stat-value">
+                    {% if live_packets and not live_packets.error %}{{ live_packets|length }}{% else %}0{% endif %}
+                </div>
+                <div class="stat-sub">Captured this session</div>
+            </div>
+        </div>
+
+        <!-- Loader -->
+        <div id="loader">
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" style="animation:spin 1s linear infinite">
+                <circle cx="8" cy="8" r="6" stroke="currentColor" stroke-width="2" stroke-dasharray="28" stroke-dashoffset="10"/>
+            </svg>
+            Processing… please wait
+        </div>
+
+        <!-- ── LOG ANALYSIS ── -->
+        <div class="card" id="section-logs">
+            <div class="card-header">
+                <div class="card-title"><span class="dot"></span>Log Analysis</div>
+            </div>
+            <div class="card-body">
+                <form method="POST" enctype="multipart/form-data" onsubmit="showLoader()">
+                    <div class="form-row">
+                        <input type="file" name="logfile" required style="flex:1">
+                        <button type="submit" class="btn btn-primary">Analyze Log</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        {% if results %}
+        <!-- Brute Force -->
+        <div class="card">
+            <div class="card-header">
+                <div class="card-title"><span class="dot" style="background:var(--danger)"></span>Brute Force Detections</div>
+                <span style="font-family:var(--mono);font-size:11px;color:var(--danger);background:var(--danger-bg);padding:3px 10px;border-radius:20px;border:1px solid rgba(248,113,113,0.2)">
+                    {{ results.brute_force|length }} found
+                </span>
+            </div>
+            <div class="card-body">
+                {% if results.brute_force %}
+                    <div class="result-list">
+                    {% for item in results.brute_force %}
+                        <div class="result-row threat">
+                            <span class="row-ip">{{ item.ip }}</span>
+                            <span class="row-label">failed logins</span>
+                            <span class="row-badge">{{ item.attempts }}×</span>
+                        </div>
+                    {% endfor %}
+                    </div>
+                {% else %}
+                    <div class="empty-state">✓ No brute force activity detected</div>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Suspicious IPs -->
+        <div class="card">
+            <div class="card-header">
+                <div class="card-title"><span class="dot" style="background:var(--warning)"></span>Suspicious IPs</div>
+                <span style="font-family:var(--mono);font-size:11px;color:var(--warning);background:var(--warning-bg);padding:3px 10px;border-radius:20px;border:1px solid rgba(251,191,36,0.2)">
+                    {{ results.suspicious_ips|length }} flagged
+                </span>
+            </div>
+            <div class="card-body">
+                {% if results.suspicious_ips %}
+                    <div class="result-list">
+                    {% for item in results.suspicious_ips %}
+                        <div class="result-row warning">
+                            <span class="row-ip">{{ item.ip }}</span>
+                            <span class="row-label">total requests</span>
+                            <span class="row-badge">{{ item.requests }}r</span>
+                        </div>
+                    {% endfor %}
+                    </div>
+                {% else %}
+                    <div class="empty-state">✓ No suspicious IPs detected</div>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Unauthorized Logins -->
+        <div class="card">
+            <div class="card-header">
+                <div class="card-title"><span class="dot" style="background:var(--danger)"></span>Unauthorized Logins</div>
+            </div>
+            <div class="card-body">
+                {% if results.unauthorized %}
+                    <div class="result-list">
+                    {% for item in results.unauthorized %}
+                        <div class="result-row threat">
+                            <span class="row-ip">{{ item.ip }}</span>
+                            <span class="row-label">{{ item.type }}</span>
+                            <span class="row-badge" style="font-size:10px">{{ item.time }}</span>
+                        </div>
+                    {% endfor %}
+                    </div>
+                {% else %}
+                    <div class="empty-state">✓ No unauthorized logins detected</div>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Chart -->
+        <div class="card">
+            <div class="card-header">
+                <div class="card-title"><span class="dot"></span>IP Activity Graph</div>
+            </div>
+            <div class="card-body" style="padding:16px;">
+                <div class="chart-container">
+                    <img src="{{ url_for('static', filename='charts/ip_chart.png') }}" alt="IP Activity Chart">
+                </div>
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- ── NETWORK SCANNER ── -->
+        <div class="card" id="section-scan">
+            <div class="card-header">
+                <div class="card-title"><span class="dot"></span>Network Scanner</div>
+            </div>
+            <div class="card-body">
+                <form method="POST" action="/scan" onsubmit="showLoader()">
+                    <div class="form-row">
+                        <input type="text" name="target" placeholder="IP address or hostname" required>
+                        <button type="submit" class="btn btn-primary">Scan Ports</button>
+                    </div>
+                </form>
+
+                {% if scan_results %}
+                <div class="section-divider"></div>
+                <div style="font-size:12px;color:var(--text-muted);margin-bottom:10px;font-weight:600;letter-spacing:0.06em;text-transform:uppercase;">
+                    Results for {{ target }}
+                </div>
+                {% if scan_results|length > 0 %}
+                    <div class="port-grid">
+                    {% for port in scan_results %}
+                        <span class="port-tag">:{{ port }}</span>
+                    {% endfor %}
+                    </div>
+                {% else %}
+                    <div class="empty-state">No open ports found</div>
+                {% endif %}
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- ── PACKET ANALYSIS ── -->
+        <div class="card" id="section-packets">
+            <div class="card-header">
+                <div class="card-title"><span class="dot"></span>Packet Analysis</div>
+            </div>
+            <div class="card-body">
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;">
+                    <div>
+                        <div style="font-size:12px;color:var(--text-muted);font-weight:600;letter-spacing:0.06em;text-transform:uppercase;margin-bottom:10px;">Offline — PCAP File</div>
+                        <form method="POST" action="/packet" enctype="multipart/form-data" onsubmit="showLoader()">
+                            <div style="display:flex;flex-direction:column;gap:8px;">
+                                <input type="file" name="packetfile" accept=".pcap" required>
+                                <button type="submit" class="btn btn-ghost" style="width:fit-content">Analyze PCAP</button>
+                            </div>
+                        </form>
+                    </div>
+                    <div>
+                        <div style="font-size:12px;color:var(--text-muted);font-weight:600;letter-spacing:0.06em;text-transform:uppercase;margin-bottom:10px;">Live Capture</div>
+                        <form method="POST" action="/live" onsubmit="showLoader()">
+                            <div style="display:flex;flex-direction:column;gap:8px;">
+                                <input type="text" name="target_ip" placeholder="Target IP address" required>
+                                <button type="submit" class="btn btn-ghost" style="width:fit-content">Start Sniffing</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                {% if packet_results %}
+                <div class="section-divider"></div>
+                <div style="font-size:12px;color:var(--text-muted);font-weight:600;margin-bottom:10px;">PCAP Results</div>
+                {% for pkt in packet_results %}
+                    <div class="packet-box" style="margin-bottom:8px;">
+                        <div class="packet-meta">
+                            <span class="packet-proto">{{ pkt.attacks | join(', ') if pkt.attacks else 'CLEAN' }}</span>
+                            <span class="packet-flow">{{ pkt.src_ip }} → {{ pkt.dst_ip }}</span>
+                            <span style="font-family:var(--mono);font-size:11px;padding:2px 8px;border-radius:4px;background:
+                                {% if pkt.severity == 'High' %}var(--danger-bg);color:var(--danger);border:1px solid rgba(248,113,113,0.2)
+                                {% elif pkt.severity == 'Medium' %}var(--warning-bg);color:var(--warning);border:1px solid rgba(251,191,36,0.2)
+                                {% else %}var(--success-bg);color:var(--success);border:1px solid rgba(52,211,153,0.2){% endif %}">
+                                {{ pkt.severity }}
+                            </span>
+                        </div>
+                        <div class="packet-payload">{{ pkt.payload }}</div>
+                    </div>
+                {% endfor %}
+                {% endif %}
+
+                {% if live_packets %}
+                <div class="section-divider"></div>
+                <div style="font-size:12px;color:var(--text-muted);font-weight:600;margin-bottom:10px;">Live Capture Results</div>
+                {% if live_packets.error %}
+                    <div class="result-row threat">
+                        <span>⚠ {{ live_packets.error }}</span>
+                    </div>
+                {% else %}
+                    {% for pkt in live_packets %}
+                    <div class="packet-box {% if pkt.suspicious %}suspicious{% endif %}" style="margin-bottom:8px;">
+                        <div class="packet-meta">
+                            <span class="packet-proto">{{ pkt.protocol }}</span>
+                            <span class="packet-flow">{{ pkt.src }} → {{ pkt.dst }}</span>
+                            {% if pkt.suspicious %}
+                                <span style="font-family:var(--mono);font-size:11px;padding:2px 8px;border-radius:4px;background:var(--danger-bg);color:var(--danger);border:1px solid rgba(248,113,113,0.2)">
+                                    {{ pkt.attacks | join(', ') }}
+                                </span>
+                            {% else %}
+                                <span style="font-family:var(--mono);font-size:11px;padding:2px 8px;border-radius:4px;background:var(--success-bg);color:var(--success);border:1px solid rgba(52,211,153,0.2)">Clean</span>
+                            {% endif %}
+                        </div>
+                        <div class="packet-payload">{{ pkt.payload }}</div>
+                    </div>
+                    {% endfor %}
+                {% endif %}
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- ── WEB SCRAPER ── -->
+        <div class="card" id="section-scrape">
+            <div class="card-header">
+                <div class="card-title"><span class="dot"></span>Web Scraper</div>
+            </div>
+            <div class="card-body">
+                <form method="POST" action="/web-scrape" onsubmit="showLoader()">
+                    <div class="form-row">
+                        <input type="text" name="url" placeholder="https://example.com" required>
+                        <button type="submit" class="btn btn-primary">Scrape</button>
+                    </div>
+                </form>
+
+                {% if scrape %}
+                <div class="section-divider"></div>
+                <div style="font-family:var(--mono);font-size:12px;color:var(--accent);margin-bottom:16px;">{{ scrape.url }}</div>
+
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;">
+                    <div>
+                        <div style="font-size:11px;color:var(--text-muted);font-weight:600;letter-spacing:0.08em;text-transform:uppercase;margin-bottom:8px;">Links ({{ scrape.links|length }})</div>
+                        {% for link in scrape.links %}
+                            <div class="link-text">{{ link }}</div>
+                        {% endfor %}
+                    </div>
+                    <div>
+                        <div style="font-size:11px;color:var(--text-muted);font-weight:600;letter-spacing:0.08em;text-transform:uppercase;margin-bottom:8px;">Images ({{ scrape.images|length }})</div>
+                        {% for img in scrape.images %}
+                            <div class="image-text">{{ img }}</div>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <div class="section-divider"></div>
+                <div style="font-size:11px;color:var(--text-muted);font-weight:600;letter-spacing:0.08em;text-transform:uppercase;margin-bottom:8px;">Threat Signals</div>
+                <div class="result-list">
+                {% for t in scrape.threats %}
+                    <div class="result-row {% if '✅' in t %}safe{% else %}warning{% endif %}">
+                        <span style="font-size:13px;">{{ t }}</span>
+                    </div>
+                {% endfor %}
+                </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- ── SYSTEM TERMINAL ── -->
+        <div class="card">
+            <div class="card-header">
+                <div class="card-title"><span class="dot" style="background:var(--success)"></span>System Log</div>
+            </div>
+            <div class="card-body" style="padding:16px;">
+                <div class="terminal" id="terminal"></div>
+            </div>
+        </div>
+
+    </main>
+</div>
+
+<style>
+@keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+</style>
+
+<script>
+function showLoader() {
+    const l = document.getElementById("loader");
+    l.style.display = "flex";
+}
+
+function logout() {
+    window.location.href = "/logout";
+}
+
+function toggleTheme() {
+    document.body.classList.toggle("light-mode");
+}
+
+// Clock
+function updateClock() {
+    const now = new Date();
+    document.getElementById("live-clock").textContent =
+        now.toISOString().replace("T", " ").substring(0, 19) + " UTC";
+}
+setInterval(updateClock, 1000);
+updateClock();
+
+// Alert
+window.onload = function () {
+    if (document.querySelectorAll(".result-row.threat").length > 0) {
+        const box = document.getElementById("alertBox");
+        box.classList.remove("hidden");
+        box.style.display = "flex";
+    }
+
+    // Terminal
+    const lines = [
+        "[ OK ] Kernel modules loaded",
+        "[ OK ] Network interfaces online",
+        "[ OK ] CyberWatch engine started",
+        "[ ** ] Monitoring active sessions...",
+        "[ ** ] Awaiting analysis input",
+    ];
+    let i = 0;
+    const term = document.getElementById("terminal");
+    function typeLine() {
+        if (i < lines.length) {
+            term.innerHTML += lines[i] + "<br>";
+            i++;
+            setTimeout(typeLine, 600);
+        }
+    }
+    typeLine();
+};
+</script>
+</body>
+</html>

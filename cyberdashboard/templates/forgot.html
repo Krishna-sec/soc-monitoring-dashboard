@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reset Password — CyberWatch</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #070b14; --surface: #0d1421; --card: #111927;
+            --border: rgba(56,189,248,0.1); --border-hover: rgba(56,189,248,0.3);
+            --accent: #38bdf8; --accent-dim: rgba(56,189,248,0.1);
+            --text: #e2e8f0; --text-muted: #64748b;
+            --danger: #f87171; --success: #34d399;
+            --mono: 'Space Mono', monospace; --sans: 'DM Sans', sans-serif;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            min-height: 100vh; font-family: var(--sans);
+            background: var(--bg); color: var(--text);
+            display: flex; align-items: center; justify-content: center; padding: 32px;
+        }
+        .container {
+            width: 100%; max-width: 440px;
+        }
+        .brand { display: flex; align-items: center; gap: 12px; margin-bottom: 48px; justify-content: center; }
+        .brand-logo {
+            width: 38px; height: 38px; background: var(--accent-dim);
+            border: 1px solid var(--border-hover); border-radius: 9px;
+            display: flex; align-items: center; justify-content: center; font-size: 20px;
+        }
+        .brand-name {
+            font-family: var(--mono); font-size: 14px; font-weight: 700;
+            color: var(--accent); letter-spacing: 0.08em; text-transform: uppercase;
+        }
+        .card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 40px;
+        }
+        .card-icon {
+            width: 52px; height: 52px;
+            background: var(--accent-dim);
+            border: 1px solid var(--border-hover);
+            border-radius: 12px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 24px;
+            margin-bottom: 20px;
+        }
+        .card-title { font-size: 22px; font-weight: 500; margin-bottom: 8px; }
+        .card-desc { font-size: 14px; color: var(--text-muted); line-height: 1.6; margin-bottom: 32px; }
+        label {
+            display: block; font-size: 11px; font-weight: 600;
+            letter-spacing: 0.1em; text-transform: uppercase;
+            color: var(--text-muted); margin-bottom: 7px;
+        }
+        input[type="text"], input[type="email"] {
+            width: 100%; background: var(--card);
+            border: 1px solid var(--border); border-radius: 8px;
+            color: var(--text); font-family: var(--sans); font-size: 14px;
+            padding: 12px 14px; outline: none;
+            transition: border-color 0.15s, box-shadow 0.15s;
+        }
+        input:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(56,189,248,0.1); }
+        input::placeholder { color: #334155; }
+        .field-error { font-size: 12px; color: var(--danger); margin-top: 6px; min-height: 16px; }
+        .btn-submit {
+            width: 100%; background: var(--accent); color: #020617;
+            border: none; border-radius: 8px; font-family: var(--sans);
+            font-size: 14px; font-weight: 600; padding: 13px; cursor: pointer;
+            margin-top: 20px; letter-spacing: 0.02em; transition: background 0.15s, transform 0.15s;
+        }
+        .btn-submit:hover { background: #7dd3fc; transform: translateY(-1px); }
+        .back-link {
+            display: flex; align-items: center; justify-content: center;
+            gap: 6px; margin-top: 24px;
+            font-size: 13px; color: var(--text-muted); text-decoration: none;
+        }
+        .back-link a { color: var(--accent); text-decoration: none; }
+        .back-link a:hover { text-decoration: underline; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="brand">
+            <div class="brand-logo">⚡</div>
+            <span class="brand-name">CyberWatch</span>
+        </div>
+
+        <div class="card">
+            <div class="card-icon">🔑</div>
+            <div class="card-title">Reset password</div>
+            <div class="card-desc">
+                Enter your email address and we'll send you a reset link. For now, this is frontend validation only.
+            </div>
+
+            <form id="forgotForm" method="POST" action="/forgot" novalidate>
+                <label for="email">Email address</label>
+                <input type="text" id="email" name="email" placeholder="you@example.com" required>
+                <div id="emailError" class="field-error"></div>
+
+                <button type="submit" class="btn-submit">Send Reset Link</button>
+            </form>
+
+            <div class="back-link">
+                <a href="{{ url_for('login') }}">← Back to sign in</a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const emailRegex = /^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/;
+        const forgotForm = document.getElementById("forgotForm");
+        const emailField = document.getElementById("email");
+        const emailError = document.getElementById("emailError");
+
+        forgotForm.addEventListener("submit", e => {
+            emailError.textContent = "";
+            if (!emailRegex.test(emailField.value.trim())) {
+                emailError.textContent = "Please enter a valid email address.";
+                e.preventDefault();
+            }
+        });
+    </script>
+</body>
+</html>

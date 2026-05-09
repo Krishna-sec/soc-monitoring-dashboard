@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign In — CyberWatch</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #070b14;
+            --surface: #0d1421;
+            --card: #111927;
+            --border: rgba(56,189,248,0.1);
+            --border-hover: rgba(56,189,248,0.3);
+            --accent: #38bdf8;
+            --accent-dim: rgba(56,189,248,0.1);
+            --text: #e2e8f0;
+            --text-muted: #64748b;
+            --text-faint: #1e293b;
+            --danger: #f87171;
+            --success: #34d399;
+            --mono: 'Space Mono', monospace;
+            --sans: 'DM Sans', sans-serif;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            min-height: 100vh;
+            font-family: var(--sans);
+            background: var(--bg);
+            color: var(--text);
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+        }
+
+        /* Left panel */
+        .left-panel {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            padding: 60px;
+            border-right: 1px solid var(--border);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .left-panel::before {
+            content: '';
+            position: absolute;
+            top: -100px; left: -100px;
+            width: 400px; height: 400px;
+            background: radial-gradient(circle, rgba(56,189,248,0.06) 0%, transparent 70%);
+            pointer-events: none;
+        }
+
+        .left-panel::after {
+            content: '';
+            position: absolute;
+            bottom: -100px; right: -50px;
+            width: 300px; height: 300px;
+            background: radial-gradient(circle, rgba(52,211,153,0.04) 0%, transparent 70%);
+            pointer-events: none;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            margin-bottom: 60px;
+        }
+
+        .brand-logo {
+            width: 42px; height: 42px;
+            background: var(--accent-dim);
+            border: 1px solid var(--border-hover);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 22px;
+        }
+
+        .brand-name {
+            font-family: var(--mono);
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--accent);
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+        }
+
+        .hero-heading {
+            font-size: 42px;
+            font-weight: 300;
+            line-height: 1.2;
+            color: var(--text);
+            margin-bottom: 16px;
+            letter-spacing: -0.02em;
+        }
+
+        .hero-heading strong {
+            font-weight: 600;
+            color: var(--accent);
+        }
+
+        .hero-desc {
+            font-size: 15px;
+            color: var(--text-muted);
+            line-height: 1.7;
+            max-width: 380px;
+            margin-bottom: 48px;
+        }
+
+        .feature-list {
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+        }
+
+        .feature-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 14px;
+            color: var(--text-muted);
+        }
+
+        .feature-dot {
+            width: 6px; height: 6px;
+            border-radius: 50%;
+            background: var(--accent);
+            flex-shrink: 0;
+        }
+
+        /* Right panel */
+        .right-panel {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 60px;
+            background: var(--surface);
+        }
+
+        .auth-card {
+            width: 100%;
+            max-width: 380px;
+        }
+
+        .auth-title {
+            font-size: 22px;
+            font-weight: 500;
+            color: var(--text);
+            margin-bottom: 6px;
+        }
+
+        .auth-subtitle {
+            font-size: 14px;
+            color: var(--text-muted);
+            margin-bottom: 36px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            font-size: 12px;
+            font-weight: 600;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            color: var(--text-muted);
+            margin-bottom: 8px;
+        }
+
+        input[type="text"],
+        input[type="password"],
+        input[type="email"] {
+            width: 100%;
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            color: var(--text);
+            font-family: var(--sans);
+            font-size: 14px;
+            padding: 12px 14px;
+            outline: none;
+            transition: border-color 0.15s, box-shadow 0.15s;
+        }
+
+        input:focus {
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(56,189,248,0.1);
+        }
+
+        input::placeholder { color: #334155; }
+
+        .strength-bar-wrap {
+            height: 3px;
+            background: #1e293b;
+            border-radius: 2px;
+            margin-top: 8px;
+            overflow: hidden;
+        }
+
+        .strength-bar {
+            height: 100%;
+            width: 0%;
+            border-radius: 2px;
+            transition: width 0.25s ease, background 0.25s ease;
+        }
+
+        .strength-label {
+            font-size: 11px;
+            color: var(--text-muted);
+            margin-top: 5px;
+        }
+
+        .field-error {
+            font-size: 12px;
+            color: var(--danger);
+            margin-top: 6px;
+            min-height: 16px;
+        }
+
+        .btn-submit {
+            width: 100%;
+            background: var(--accent);
+            color: #020617;
+            border: none;
+            border-radius: 8px;
+            font-family: var(--sans);
+            font-size: 14px;
+            font-weight: 600;
+            padding: 13px;
+            cursor: pointer;
+            margin-top: 8px;
+            transition: background 0.15s, transform 0.15s;
+            letter-spacing: 0.02em;
+        }
+
+        .btn-submit:hover {
+            background: #7dd3fc;
+            transform: translateY(-1px);
+        }
+
+        .auth-links {
+            display: flex;
+            justify-content: center;
+            gap: 6px;
+            margin-top: 24px;
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+
+        .auth-links a {
+            color: var(--accent);
+            text-decoration: none;
+        }
+
+        .auth-links a:hover { text-decoration: underline; }
+
+        .auth-note {
+            margin-top: 20px;
+            padding: 10px 14px;
+            border-radius: 8px;
+            background: rgba(56,189,248,0.05);
+            border: 1px solid var(--border);
+            font-size: 12px;
+            color: var(--text-muted);
+            text-align: center;
+            line-height: 1.5;
+        }
+
+        @media (max-width: 768px) {
+            body { grid-template-columns: 1fr; }
+            .left-panel { display: none; }
+            .right-panel { padding: 32px 24px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="left-panel">
+        <div class="brand">
+            <div class="brand-logo">⚡</div>
+            <span class="brand-name">CyberWatch</span>
+        </div>
+
+        <h1 class="hero-heading">
+            Security<br>
+            <strong>Intelligence</strong><br>
+            Dashboard
+        </h1>
+
+        <p class="hero-desc">
+            Real-time threat detection, packet analysis, and network scanning — unified in one platform.
+        </p>
+
+        <div class="feature-list">
+            <div class="feature-item"><span class="feature-dot"></span>Brute force &amp; intrusion detection</div>
+            <div class="feature-item"><span class="feature-dot"></span>Live packet capture &amp; PCAP analysis</div>
+            <div class="feature-item"><span class="feature-dot"></span>Network port scanning</div>
+            <div class="feature-item"><span class="feature-dot"></span>Web vulnerability reconnaissance</div>
+        </div>
+    </div>
+
+    <div class="right-panel">
+        <div class="auth-card">
+            <div class="auth-title">Welcome back</div>
+            <div class="auth-subtitle">Sign in to your dashboard</div>
+
+            <form id="loginForm" method="POST" action="/" novalidate>
+                <div class="form-group">
+                    <label for="email">Email</label>
+                    <input type="text" id="email" name="email" placeholder="you@example.com" autocomplete="email" required>
+                    <div id="emailError" class="field-error"></div>
+                </div>
+
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" name="password" placeholder="Enter your password" autocomplete="current-password" required>
+                    <div class="strength-bar-wrap" aria-hidden="true">
+                        <div id="strengthBar" class="strength-bar"></div>
+                    </div>
+                    <div id="strengthText" class="strength-label">Strength: not entered</div>
+                    <div id="passwordError" class="field-error"></div>
+                </div>
+
+                <button type="submit" class="btn-submit">Sign In</button>
+            </form>
+
+            <div class="auth-links">
+                <a href="{{ url_for('signup') }}">Create account</a>
+                <span>·</span>
+                <a href="{{ url_for('forgot') }}">Forgot password?</a>
+            </div>
+
+            <div class="auth-note">Frontend validation only — no backend authentication implemented yet.</div>
+        </div>
+    </div>
+
+    <script>
+        const emailRegex = /^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/;
+        const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9]).{9,}$/;
+
+        const loginForm = document.getElementById("loginForm");
+        const emailField = document.getElementById("email");
+        const passwordField = document.getElementById("password");
+        const emailError = document.getElementById("emailError");
+        const passwordError = document.getElementById("passwordError");
+        const strengthBar = document.getElementById("strengthBar");
+        const strengthText = document.getElementById("strengthText");
+
+        function getStrength(pw) {
+            let s = 0;
+            if (pw.length > 8) s++;
+            if (/[A-Z]/.test(pw)) s++;
+            if (/[a-z]/.test(pw)) s++;
+            if (/\d/.test(pw)) s++;
+            if (/[^A-Za-z0-9]/.test(pw)) s++;
+            return s;
+        }
+
+        passwordField.addEventListener("input", () => {
+            const pw = passwordField.value;
+            if (!pw) {
+                strengthBar.style.width = "0%";
+                strengthBar.style.background = "transparent";
+                strengthText.textContent = "Strength: not entered";
+                return;
+            }
+            const s = getStrength(pw);
+            strengthBar.style.width = (s * 20) + "%";
+            if (s <= 2) { strengthBar.style.background = "#f87171"; strengthText.textContent = "Strength: weak"; }
+            else if (s <= 4) { strengthBar.style.background = "#fbbf24"; strengthText.textContent = "Strength: moderate"; }
+            else { strengthBar.style.background = "#34d399"; strengthText.textContent = "Strength: strong"; }
+        });
+
+        loginForm.addEventListener("submit", e => {
+            let ok = true;
+            emailError.textContent = "";
+            passwordError.textContent = "";
+            if (!emailRegex.test(emailField.value.trim())) {
+                emailError.textContent = "Enter a valid email address.";
+                ok = false;
+            }
+            if (!passwordRegex.test(passwordField.value)) {
+                passwordError.textContent = "Must be 9+ chars with uppercase, lowercase, digit and special character.";
+                ok = false;
+            }
+            if (!ok) e.preventDefault();
+        });
+    </script>
+</body>
+</html>

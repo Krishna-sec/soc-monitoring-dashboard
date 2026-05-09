@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign Up — CyberWatch</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #070b14; --surface: #0d1421; --card: #111927;
+            --border: rgba(56,189,248,0.1); --border-hover: rgba(56,189,248,0.3);
+            --accent: #38bdf8; --accent-dim: rgba(56,189,248,0.1);
+            --text: #e2e8f0; --text-muted: #64748b;
+            --danger: #f87171; --success: #34d399;
+            --mono: 'Space Mono', monospace; --sans: 'DM Sans', sans-serif;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            min-height: 100vh; font-family: var(--sans);
+            background: var(--bg); color: var(--text);
+            display: flex; align-items: center; justify-content: center; padding: 32px;
+        }
+        .page-wrap {
+            display: grid; grid-template-columns: 1fr 1fr;
+            width: 100%; max-width: 900px;
+            background: var(--surface); border-radius: 20px;
+            border: 1px solid var(--border); overflow: hidden;
+        }
+        .info-panel {
+            padding: 52px 44px;
+            border-right: 1px solid var(--border);
+            display: flex; flex-direction: column; justify-content: center;
+            position: relative; overflow: hidden;
+        }
+        .info-panel::before {
+            content: ''; position: absolute; top: -80px; right: -80px;
+            width: 280px; height: 280px;
+            background: radial-gradient(circle, rgba(56,189,248,0.07) 0%, transparent 70%);
+        }
+        .brand { display: flex; align-items: center; gap: 12px; margin-bottom: 48px; }
+        .brand-logo {
+            width: 38px; height: 38px; background: var(--accent-dim);
+            border: 1px solid var(--border-hover); border-radius: 9px;
+            display: flex; align-items: center; justify-content: center; font-size: 20px;
+        }
+        .brand-name {
+            font-family: var(--mono); font-size: 14px; font-weight: 700;
+            color: var(--accent); letter-spacing: 0.08em; text-transform: uppercase;
+        }
+        .info-heading {
+            font-size: 30px; font-weight: 300; line-height: 1.25;
+            color: var(--text); margin-bottom: 14px; letter-spacing: -0.02em;
+        }
+        .info-heading strong { font-weight: 600; }
+        .info-desc { font-size: 14px; color: var(--text-muted); line-height: 1.7; margin-bottom: 36px; }
+        .step-list { display: flex; flex-direction: column; gap: 16px; }
+        .step { display: flex; align-items: flex-start; gap: 14px; }
+        .step-num {
+            width: 26px; height: 26px; border-radius: 50%; flex-shrink: 0;
+            background: var(--accent-dim); border: 1px solid var(--border-hover);
+            display: flex; align-items: center; justify-content: center;
+            font-family: var(--mono); font-size: 11px; font-weight: 700; color: var(--accent);
+        }
+        .step-text { font-size: 13px; color: var(--text-muted); padding-top: 3px; line-height: 1.5; }
+
+        /* Form panel */
+        .form-panel { padding: 52px 44px; }
+        .form-title { font-size: 20px; font-weight: 500; margin-bottom: 6px; }
+        .form-subtitle { font-size: 14px; color: var(--text-muted); margin-bottom: 32px; }
+        .form-group { margin-bottom: 18px; }
+        label {
+            display: block; font-size: 11px; font-weight: 600;
+            letter-spacing: 0.1em; text-transform: uppercase;
+            color: var(--text-muted); margin-bottom: 7px;
+        }
+        input[type="text"], input[type="password"], input[type="email"] {
+            width: 100%; background: var(--card);
+            border: 1px solid var(--border); border-radius: 8px;
+            color: var(--text); font-family: var(--sans); font-size: 14px;
+            padding: 11px 14px; outline: none;
+            transition: border-color 0.15s, box-shadow 0.15s;
+        }
+        input:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(56,189,248,0.1); }
+        input::placeholder { color: #334155; }
+        .strength-wrap { height: 3px; background: #1e293b; border-radius: 2px; margin-top: 7px; overflow: hidden; }
+        .strength-bar { height: 100%; width: 0%; border-radius: 2px; transition: width 0.25s, background 0.25s; }
+        .strength-label { font-size: 11px; color: var(--text-muted); margin-top: 4px; }
+        .field-error { font-size: 12px; color: var(--danger); margin-top: 5px; min-height: 15px; }
+        .btn-submit {
+            width: 100%; background: var(--accent); color: #020617;
+            border: none; border-radius: 8px; font-family: var(--sans);
+            font-size: 14px; font-weight: 600; padding: 13px; cursor: pointer;
+            margin-top: 6px; letter-spacing: 0.02em; transition: background 0.15s, transform 0.15s;
+        }
+        .btn-submit:hover { background: #7dd3fc; transform: translateY(-1px); }
+        .auth-links { text-align: center; margin-top: 20px; font-size: 13px; color: var(--text-muted); }
+        .auth-links a { color: var(--accent); text-decoration: none; }
+        .auth-links a:hover { text-decoration: underline; }
+
+        @media (max-width: 700px) {
+            body { padding: 16px; }
+            .page-wrap { grid-template-columns: 1fr; }
+            .info-panel { display: none; }
+            .form-panel { padding: 36px 24px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="page-wrap">
+        <div class="info-panel">
+            <div class="brand">
+                <div class="brand-logo">⚡</div>
+                <span class="brand-name">CyberWatch</span>
+            </div>
+            <h2 class="info-heading">Start securing<br>your <strong>network</strong><br>today</h2>
+            <p class="info-desc">Create your account to access the full suite of cybersecurity tools.</p>
+            <div class="step-list">
+                <div class="step">
+                    <div class="step-num">01</div>
+                    <div class="step-text">Create your account with a strong password</div>
+                </div>
+                <div class="step">
+                    <div class="step-num">02</div>
+                    <div class="step-text">Sign in and reach your personal dashboard</div>
+                </div>
+                <div class="step">
+                    <div class="step-num">03</div>
+                    <div class="step-text">Upload logs, scan networks, capture packets</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="form-panel">
+            <div class="form-title">Create account</div>
+            <div class="form-subtitle">Already have one? <a href="{{ url_for('login') }}" style="color:var(--accent);text-decoration:none">Sign in</a></div>
+
+            <form id="signupForm" method="POST" action="/signup" novalidate>
+                <div class="form-group">
+                    <label for="email">Email</label>
+                    <input type="text" id="email" name="email" placeholder="you@example.com" required>
+                    <div id="emailError" class="field-error"></div>
+                </div>
+
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" name="password" placeholder="Create a strong password" required>
+                    <div class="strength-wrap">
+                        <div id="strengthBar" class="strength-bar"></div>
+                    </div>
+                    <div id="strengthText" class="strength-label">Strength: not entered</div>
+                    <div id="passwordError" class="field-error"></div>
+                </div>
+
+                <div class="form-group">
+                    <label for="confirmPassword">Confirm Password</label>
+                    <input type="password" id="confirmPassword" name="confirmPassword" placeholder="Re-enter password" required>
+                    <div id="confirmError" class="field-error"></div>
+                </div>
+
+                <button type="submit" class="btn-submit">Create Account</button>
+            </form>
+
+            <div class="auth-links">
+                <a href="{{ url_for('login') }}">← Back to sign in</a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const emailRegex = /^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/;
+        const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9]).{9,}$/;
+
+        const signupForm = document.getElementById("signupForm");
+        const emailField = document.getElementById("email");
+        const passwordField = document.getElementById("password");
+        const confirmField = document.getElementById("confirmPassword");
+        const emailError = document.getElementById("emailError");
+        const passwordError = document.getElementById("passwordError");
+        const confirmError = document.getElementById("confirmError");
+        const strengthBar = document.getElementById("strengthBar");
+        const strengthText = document.getElementById("strengthText");
+
+        function getStrength(pw) {
+            let s = 0;
+            if (pw.length > 8) s++;
+            if (/[A-Z]/.test(pw)) s++;
+            if (/[a-z]/.test(pw)) s++;
+            if (/\d/.test(pw)) s++;
+            if (/[^A-Za-z0-9]/.test(pw)) s++;
+            return s;
+        }
+
+        passwordField.addEventListener("input", () => {
+            const pw = passwordField.value;
+            if (!pw) { strengthBar.style.width = "0%"; strengthBar.style.background = "transparent"; strengthText.textContent = "Strength: not entered"; return; }
+            const s = getStrength(pw);
+            strengthBar.style.width = (s * 20) + "%";
+            if (s <= 2) { strengthBar.style.background = "#f87171"; strengthText.textContent = "Strength: weak"; }
+            else if (s <= 4) { strengthBar.style.background = "#fbbf24"; strengthText.textContent = "Strength: moderate"; }
+            else { strengthBar.style.background = "#34d399"; strengthText.textContent = "Strength: strong"; }
+        });
+
+        signupForm.addEventListener("submit", e => {
+            let ok = true;
+            emailError.textContent = ""; passwordError.textContent = ""; confirmError.textContent = "";
+            if (!emailRegex.test(emailField.value.trim())) { emailError.textContent = "Enter a valid email address."; ok = false; }
+            if (!passwordRegex.test(passwordField.value)) { passwordError.textContent = "9+ chars with uppercase, lowercase, digit and special character."; ok = false; }
+            if (passwordField.value !== confirmField.value) { confirmError.textContent = "Passwords do not match."; ok = false; }
+            if (!ok) e.preventDefault();
+        });
+    </script>
+</body>
+</html>
